@@ -13,7 +13,16 @@ public class OrderEventProducer {
     }
 
     public void publishOrderCreated(OrderCreatedEvent event) {
-        kafkaTemplate.send("orders", event.getOrderId(), event);
-
+        kafkaTemplate.send("orders", event.getOrderId(), event)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        System.err.println("Error al publicar evento: " + ex.getMessage());
+                        ex.printStackTrace();
+                    } else {
+                        System.out.println("Evento publicado en partición "
+                                + result.getRecordMetadata().partition()
+                                + " offset " + result.getRecordMetadata().offset());
+                    }
+                });
     }
 }

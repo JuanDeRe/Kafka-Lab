@@ -73,6 +73,6 @@ Topic : orders
 Clave : 
 Partición : 3 
 Consumidor : 
-Consumer Group :
+Consumer Group : inventory-service
 
 
