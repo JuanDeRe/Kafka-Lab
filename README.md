@@ -41,3 +41,30 @@ brevemente su decisión.
 
 Los riesgos al tener solo una partición en un topic son que no nos permite paralelismo. Al tener solo replicación 1, estamos susceptibles a fallos; en cambio, si tuviéramos más, nuestro sistema sería tolerante a estas fallas. El tiempo de retención es muy corto para la auditoría.
 Para mejorar el ambiente, tendríamos que poner más particiones, aumentar la duración de retención de los eventos en el broker y el tamaño de réplicas para que nuestro sistema sea tolerante a fallas.
+
+**Actividad 4. Trazabilidad del evento**
+
+Documente el recorrido del evento desde la solicitud HTTP hasta el consumidor. Indique topic, clave, partición,
+consumidor, Consumer Group y evidencia en Kafka UI 
+
+corremos docker con los siguiente comandos
+
+docker compose up -d
+docker ps
+
+creamos el topico
+
+docker exec -it arsw-kafka bash
+/opt/kafka/bin/kafka-topics.sh --create --topic orders --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
+
+levantamos spring-boot
+
+mvn spring-boot:run
+
+Hacemos la peticion 
+
+curl -X POST http://localhost:8081/orders -H "Content-Type: application/json" -d "{\"customerId\":\"CUS01\",\"total\":120000}"
+
+![peticionPost.png](images%2FpeticionPost.png)
+
+
