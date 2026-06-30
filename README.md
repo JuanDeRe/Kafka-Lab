@@ -67,4 +67,12 @@ curl -X POST http://localhost:8081/orders -H "Content-Type: application/json" -d
 
 ![peticionPost.png](images%2FpeticionPost.png)
 
+Ahora, consultamos kafka UI : http://localhost:8080/
+
+Topic : orders
+Clave : 
+Partición : 3 
+Consumidor : 
+Consumer Group :
+
 
