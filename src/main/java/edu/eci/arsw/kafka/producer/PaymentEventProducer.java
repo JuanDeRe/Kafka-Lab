@@ -1,0 +1,19 @@
+package edu.eci.arsw.kafka.producer;
+
+
+import edu.eci.arsw.kafka.dto.PaymentProcessedEvent;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PaymentEventProducer {
+    private final KafkaTemplate<String, PaymentProcessedEvent> kafkaTemplate;
+
+    public PaymentEventProducer(KafkaTemplate<String, PaymentProcessedEvent> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+    public void publishPaymentProcessed(PaymentProcessedEvent event){
+        kafkaTemplate.send("Payments", event.getOrderId(), event);
+        System.out.println("Evento de pago publicado: " + event.getPaymentId() + " - Estado: " + event.getStatus());
+    }
+}
