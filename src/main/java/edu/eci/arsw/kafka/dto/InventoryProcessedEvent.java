@@ -11,11 +11,12 @@ public class InventoryProcessedEvent {
     private Instant occurredAt;
 
     public InventoryProcessedEvent() {}
-    public InventoryProcessedEvent(String inventoryId, String orderId, String customerId,
+    public InventoryProcessedEvent(String inventoryId, String orderId, String customerId,Double total,
                                    String status, Instant occurredAt) {
         this.inventoryId = inventoryId;
         this.orderId = orderId;
         this.customerId = customerId;
+        this.total = total;
         this.status = status;
         this.occurredAt = occurredAt;
     }

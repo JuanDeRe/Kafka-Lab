@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderEventConsumer {
-    @KafkaListener(topics = "orders", groupId = "inventory-service")
+    @KafkaListener(topics = "orders", groupId = "orders-service")
     public void consume(OrderCreatedEvent event) {
         System.out.println("Evento recibido en inventory-service: " + event.getOrderId());
     }

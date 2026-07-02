@@ -110,3 +110,72 @@ Consumer Group inventory-service, 1 consumidor activo, estado STABLE.
 4. Kafka asigna el mensaje a una partición (según hash de la clave) dentro de las 3 particiones del topic **orders**.
 5. **OrderEventConsumer**, suscrito al topic **orders**  del Consumer Group **inventory-service**, lee el evento y lo imprime en consola.
 6. Kafka UI confirma el evento: topic, clave, partición, offset, contenido del mensaje y estado del Consumer Group.
+
+**Actividad 6. Evidencia y análisis**
+
+Cree pedidos con valores diferentes y reconstruya el flujo de eventos en Kafka UI. Identifique eventos generados, topics, claves, Consumer Groups, offsets y lag.
+
+- Evidenciamos que se crearon correctamente los topics
+
+![extensionTopics.png](images/extensionTopics.png)
+
+### 1. Pedidos de prueba
+
+curl -X POST http://localhost:8081/orders -H "Content-Type: application/json" -d "{"customerId":"CUS01","total":123456}"
+curl -X POST http://localhost:8081/orders -H "Content-Type: application/json" -d "{"customerId":"CUS02","total":4578935}"
+curl -X POST http://localhost:8081/orders -H "Content-Type: application/json" -d "{"customerId":"CUS03","total":98235225}"
+
+- Hacemos peticiones
+
+![peticionesExtencion.png](images/peticionesExtencion.png)
+
+### 2. Eventos generados por topic
+
+**Topic orders**
+
+- Evento: order-created
+- Clave: orderId
+- Particiones: 3
+- Mensajes: 3 (uno por pedido)
+
+![topicOrderMensajes.png](images/topicOrderMensajes.png)
+
+**Topic payments**
+
+- Evento: payment-processed
+- Clave: orderId (mismo valor que en orders)
+- Particiones: 3
+- Mensajes: 3
+
+![paymentsMensajes.png](images/paymentsMensajes.png)
+
+**Topic inventory**
+
+- Evento: inventory-processed
+- Clave: orderId (mismo valor que en orders)
+- Particiones: 3
+- Mensajes: 3
+
+![invMensajes.png](images/invMensajes.png)
+
+### 3. Trazabilidad por clave
+
+Para el pedido **ORD-e5a7612a-6000-461f-952d-af7a7ae8493b** (CUS01, total 123456), la clave orderId se mantiene
+constante en los tres topics, lo que permite reconstruir el flujo completo
+consultando cada topic por esa misma clave.
+
+| Topic | Key (orderId) | Partition | Offset |
+|---|---|-----------|--------|
+| orders | ORD-e5a7612a-6000-461f-952d-af7a7ae8493b | 0         | 2      |
+| payments |ORD-e5a7612a-6000-461f-952d-af7a7ae8493b | 0         | 2      |
+| inventory | ORD-e5a7612a-6000-461f-952d-af7a7ae8493b | 0         | 2      |
+
+### 4. Consumer Groups y lag
+
+| Consumer Group  | Lag | Estado |
+|---|---|---|
+| payment-service | N/A | STABLE |
+| inventory-service | N/A | STABLE |
+| orders-service| N/A | STABLE |
+
+![consumersP6.png](images/consumersP6.png)

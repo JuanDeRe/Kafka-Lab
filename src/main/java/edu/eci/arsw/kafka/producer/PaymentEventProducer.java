@@ -13,7 +13,7 @@ public class PaymentEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
     public void publishPaymentProcessed(PaymentProcessedEvent event){
-        kafkaTemplate.send("Payments", event.getOrderId(), event);
+        kafkaTemplate.send("payments", event.getOrderId(), event);
         System.out.println("Evento de pago publicado: " + event.getPaymentId() + " - Estado: " + event.getStatus());
     }
 }

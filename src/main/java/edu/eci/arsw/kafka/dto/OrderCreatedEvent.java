@@ -9,6 +9,9 @@ public class OrderCreatedEvent {
     private String status;
     private Instant occurredAt;
 
+    public OrderCreatedEvent() {
+    }
+
     public OrderCreatedEvent(String orderId,String customerId,Double total,String status,Instant occurredAt)
     {
         this.orderId = orderId;

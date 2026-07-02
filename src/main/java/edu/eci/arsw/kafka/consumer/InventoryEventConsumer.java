@@ -26,6 +26,7 @@ public class InventoryEventConsumer {
                 "INV-" + UUID.randomUUID(),
                 event.getOrderId(),
                 event.getCustomerId(),
+                event.getTotal(),
                 reserved ? "RESERVED" : "REJECTED",
                 Instant.now() );
 

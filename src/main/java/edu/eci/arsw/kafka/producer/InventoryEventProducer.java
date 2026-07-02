@@ -13,7 +13,7 @@ public class InventoryEventProducer {
     }
 
     public void publishInventoryProcessed(InventoryProcessedEvent event){
-        kafkaTemplate.send("Inventory", event.getOrderId(), event);
+        kafkaTemplate.send("inventory", event.getOrderId(), event);
         System.out.println("Evento de inventario publicado: " + event.getInventoryId() + " - Estado: " + event.getStatus());
     }
 }
