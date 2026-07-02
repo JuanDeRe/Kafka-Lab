@@ -102,7 +102,7 @@ Consumer Group inventory-service, 1 consumidor activo, estado STABLE.
 ![consumersP4.png](images/consumersP4.png)
 
 
-### 6. Recorrido completo del evento
+## 6. Recorrido completo del evento
 
 1. Cliente hace **POST /orders** con **customerId** y **total**.
 2. El controllador con el metodo **createOrder()** construye el **OrderCreatedEvent** (orderId = UUID, status = CREATED, occurredAt = Instant.now()).
@@ -179,3 +179,45 @@ consultando cada topic por esa misma clave.
 | orders-service| N/A | STABLE |
 
 ![consumersP6.png](images/consumersP6.png)
+
+## **Actividad 8. Diagnóstico de buenas prácticas**
+
+Revise una arquitectura que usa un topic events, mensajes sin clave, factor 
+de replicación 1, sin DLT y sin monitoreo de lag. Identifique problemas, atributos afectados
+y mejoras prioritarias.
+
+#### Problemas
+
+**1. Un solo topic events para todo**
+Mezclar eventos de dominios distintos (pedidos, pagos, inventario, etc.) en
+un único topic rompe la organización por dominio, dificulta que cada servicio consuma solo lo que le interesa
+y obliga a filtrar mensajes irrelevantes en el consumidor.
+
+**2. Mensajes sin clave**
+Sin clave, Kafka reparte los mensajes entre particiones de forma
+aleatoria. Esto significa que eventos
+relacionados por ejemplo, todos los eventos de un mismo pedido pueden caer
+en particiones distintas, perdiendo el orden dentro de una
+partición. Asímismo, Rompe la trazabilidad por entidad que se logró en la Actividad 6
+usando **orderId** como clave.
+
+**3. Factor de replicación = 1**
+Si el único broker que tiene la partición falla, esos datos se pierden por
+completo, por lo tanto, hay tolerancia a fallos.
+
+**4. Sin monitoreo de lag**
+Sin visibilidad del lag, nadie se entera si un consumidor dejó de procesar mensajes hasta que el problema pasa a grandes escalas.
+
+#### Criterios
+
+- Disponibilidad: Si tenemos una replica de 1, no tenemos tolerancia a fallos de broker 
+- Mantenibilidad: Al tener un topic único mezcla dominios y es difícil de mantener y escalar 
+
+#### Mejoras prioritarias
+
+1. **Separar events en topics por dominio** (orders, payments,
+   inventory), como se hizo en el punto 6.
+2. **Definir una clave de particionamiento** coherente con la entidad cuyo
+   orden importa (orderId, consumerId).
+3. **Subir el factor de replicación** a al menos 3 en producción, para
+   tolerar la caída de un broker.
